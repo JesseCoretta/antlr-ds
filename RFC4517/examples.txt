@@ -1,0 +1,38 @@
+printf 'TRUE' | grun RFC4517 bool -trace
+printf 'FALSE' | grun RFC4517 bool -trace
+printf 'UID=jsmith,DC=example,DC=net' | grun RFC4517 dN -trace
+printf 'OU=Sales+CN=J. Smith,DC=example,DC=net' | grun RFC4517 dN -trace
+printf 'CN=John Smith\, III,DC=example,DC=net' | grun RFC4517 dN -trace
+printf 'CN=Before\\0dAfter,DC=example,DC=net' | grun RFC4517 dN -trace
+printf '1.3.6.1.4.1.1466.0=#04024869,DC=example,DC=com' | grun RFC4517 dN -trace
+printf '1.3.6.1.4.1.56521=jesse,DC=example,DC=com' | grun RFC4517 dN -trace
+printf 'person#(sn$EQ)' | grun RFC4517 guide -trace
+printf 'person#((2.5.4.3;lang-cn$EQ&!2.5.4.3;lang-de$EQ)|?false)#oneLevel' | grun RFC4517 enhancedGuide -trace
+printf "cn=Jesse Coretta+gidNumber=6162,ou=People,dc=example,dc=com" | grun RFC4517 dN -trace
+printf "cn=Jesse Coretta+gidNumber=6162,ou=People,dc=example,dc=com#'0101'B" | grun RFC4517 nameAndOptionalUID -trace
+printf "cn=Jesse Coretta+gidNumber=6162,ou=People,dc=example,dc=com" | grun RFC4517 nameAndOptionalUID -trace -trace
+printf 'ia5$physical'  | grun RFC4517 deliveryMethod -trace
+printf 'bla*rgahru*' | grun RFC4517 substringAssertion -trace
+printf 'Jess*' | grun RFC4517 substringAssertion -trace
+printf '*esse' | grun RFC4517 substringAssertion -trace
+printf '99999999999999999999999999999999999999999999999999999999999999' | grun RFC4517 integer -trace
+echo -n '-99999999999999999999999999999999999999999999999999999999999999'
+printf '2.5.4.3' | grun RFC4517 oID -trace
+printf 'cn' | grun RFC4517 oID -trace
+printf '9905280430Z' | grun RFC4517 uTCTime -trace
+printf '202512161005-0550' | grun RFC4517 generalizedTime -trace
+printf 'MCIMail$jesse@example.com' | grun RFC4517 otherMailbox -trace
+printf '12345$US$getrac' |  grun RFC4517 telexNumber -trace
+printf '123 Fake Avenue$Palm Springs$CA$92240$US' | grun RFC4517 postalAddress -trace
+printf 平仮名 | grun RFC4517 directoryString -trace
+printf 'WAT' | grun RFC4517 directoryString -trace
+printf 'This is a PrintableString.' |  grun RFC4517 printableString -trace
+printf '01 10 00 11' | grun RFC4517 numericString -trace
+printf '+1 555 555 0280$b4Length$uncompressed$twoDimensional' | grun RFC4517 facsimileTelephoneNumber -trace
+printf 'P$control:abcd' |  grun RFC4517 teletexTerminalIdentifier -trace
+
+## Alternative to cmd #6
+#echo -n 'CN=Before\0dAfter,DC=example,DC=net' | grun RFC4517 dN -trace
+
+## File-based example: JPEG syntax check (no use of echo/printf required)
+#grun RFC4517 jPEG -encoding ISO-8859-1 </path/to/jpg/file>
