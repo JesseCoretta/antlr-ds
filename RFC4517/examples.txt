@@ -16,7 +16,7 @@ printf 'bla*rgahru*' | grun RFC4517 substringAssertion -trace
 printf 'Jess*' | grun RFC4517 substringAssertion -trace
 printf '*esse' | grun RFC4517 substringAssertion -trace
 printf '99999999999999999999999999999999999999999999999999999999999999' | grun RFC4517 integer -trace
-echo -n '-99999999999999999999999999999999999999999999999999999999999999'
+echo -n '-99999999999999999999999999999999999999999999999999999999999999' | grun RFC4517 integer -trace
 printf '2.5.4.3' | grun RFC4517 oID -trace
 printf 'cn' | grun RFC4517 oID -trace
 printf '9905280430Z' | grun RFC4517 uTCTime -trace
