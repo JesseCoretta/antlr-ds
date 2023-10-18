@@ -1,3 +1,11 @@
+printf "( 1.3.6.1.4.1.56521.999.114.1 NAME ( 'dcrName' 'dcrAltName' ) DESC 'descriptive text' AUX ( accountClass $ otherIAMClass ) X-ORIGIN ( 'RFCXXXX' 'RFCYYYY' ))" | grun RFC4517 dITContentRuleDescription -trace
+printf "( 1.3.6.1.4.1.56521.999.114.2 NAME 'nFName' DESC 'descriptive text' OC ocName MUST ( cn $ sn $ uid ) MAY ( l $ objectClass $ uid ) X-ORIGIN ( 'RFCXXXX' 'RFCYYYY' ) )" | grun RFC4517 nameFormDescription -trace
+printf "( 2 NAME 'dsrName' DESC 'descriptive text' FORM nFName SUP 1 X-ORIGIN ( 'RFCXXXX' 'RFCYYYY' ))" | grun RFC4517 dITStructureRuleDescription -trace
+printf "( 1.3.6.1.4.1.56521.999.114.3 NAME 'ocName' DESC 'descriptive text' SUP cn STRUCTURAL X-ORIGIN ( 'RFCXXXX' 'RFCYYYY' ) )" | grun RFC4517 objectClassDescription -trace
+printf "( 1.3.6.1.4.1.56521.999.114.4 NAME ('attrName' 'atName2') DESC 'descriptive text' SYNTAX 1.3.6{14} SINGLE-VALUE USAGE dSAOperation )" | grun RFC4517 attributeTypeDescription -trace
+printf "( 1.3.6.1.4.1.56521.999.114.5 NAME 'mruName' DESC 'descriptive text' APPLIES ( cn $ sn $ l ) X-ORIGIN ( 'RFCXXXX' 'RFCYYYY' ) )" | grun RFC4517 matchingRuleUseDescription -trace
+printf "( 1.3.6.1.4.1.56521.999.114.6 NAME 'mrName' DESC 'descriptive text' SYNTAX 1.3.6.1.4.1.56521.999.5 X-ORIGIN ( 'RFCXXXX' 'RFCYYYY' ) )" | grun RFC4517 matchingRuleDescription -trace
+printf "( 1.3.6.1.4.1.56521.999.114.7 DESC 'descriptive text' )" | grun RFC4517 lDAPSyntaxDescription -trace
 printf 'TRUE' | grun RFC4517 bool -trace
 printf 'FALSE' | grun RFC4517 bool -trace
 printf 'UID=jsmith,DC=example,DC=net' | grun RFC4517 dN -trace
@@ -5,7 +13,7 @@ printf 'OU=Sales+CN=J. Smith,DC=example,DC=net' | grun RFC4517 dN -trace
 printf 'CN=John Smith\, III,DC=example,DC=net' | grun RFC4517 dN -trace
 printf 'CN=Before\\0dAfter,DC=example,DC=net' | grun RFC4517 dN -trace
 printf '1.3.6.1.4.1.1466.0=#04024869,DC=example,DC=com' | grun RFC4517 dN -trace
-printf '1.3.6.1.4.1.56521=jesse,DC=example,DC=com' | grun RFC4517 dN -trace
+printf '1.3.6.1.4.1.56521.999.7=jesse,DC=example,DC=com' | grun RFC4517 dN -trace
 printf 'person#(sn$EQ)' | grun RFC4517 guide -trace
 printf 'person#((2.5.4.3;lang-cn$EQ&!2.5.4.3;lang-de$EQ)|?false)#oneLevel' | grun RFC4517 enhancedGuide -trace
 printf "cn=Jesse Coretta+gidNumber=6162,ou=People,dc=example,dc=com" | grun RFC4517 dN -trace
@@ -27,7 +35,7 @@ printf '123 Fake Avenue$Palm Springs$CA$92240$US' | grun RFC4517 postalAddress -
 printf 平仮名 | grun RFC4517 directoryString -trace
 printf 'WAT' | grun RFC4517 directoryString -trace
 printf 'This is a PrintableString.' |  grun RFC4517 printableString -trace
-printf '01 10 00 11' | grun RFC4517 numericString -trace
+printf '01 10 38 11' | grun RFC4517 numericString -trace
 printf '+1 555 555 0280$b4Length$uncompressed$twoDimensional' | grun RFC4517 facsimileTelephoneNumber -trace
 printf 'P$control:abcd' |  grun RFC4517 teletexTerminalIdentifier -trace
 

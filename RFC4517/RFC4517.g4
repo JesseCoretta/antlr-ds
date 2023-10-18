@@ -12,14 +12,14 @@ grammar RFC4517;
 //------------------------------+---------------------------------+-----------------+--------------------------------+
 // Syntax Desc / Parser Rule	| Associated Lexer		  | RFC § / OID ARC | Description		     |
 //------------------------------+---------------------------------+-----------------+--------------------------------+
-//attributeTypeDescription	: ''				  ; // 3.3.1   / 3  | Attribute Type Description     |
-//dITContentRuleDescription	: ''				  ; // 3.3.7   / 16 | DIT Content Rule Description   |
-//dITStructureRuleDescription	: ''				  ; // 3.3.8   / 17 | DIT Structure Rule Description |
-//lDAPSyntaxDescription		: ''				  ; // 3.3.18  / 54 | LDAP Syntax Description 	     |
-//matchingRuleDescription	: ''				  ; // 3.3.19  / 15 | Matching Rule Description      |
-//matchingRuleUseDescription	: ''				  ; // 3.3.20  / 31 | Matching Rule Use Description  |
-//objectClassDescription	: ''				  ; // 3.3.20  / 37 | Object Class Description 	     |
-//nameFormDescription		: ''				  ; // 3.3.22  / 35 | Name Form Description 	     |
+attributeTypeDescription	: AT_DESC			  ; // 3.3.1   / 3  | Attribute Type Description     |
+objectClassDescription		: OC_DESC			  ; // 3.3.20  / 37 | Object Class Description 	     |
+dITContentRuleDescription	: DCR_DESC			  ; // 3.3.7   / 16 | DIT Content Rule Description   |
+dITStructureRuleDescription	: DSR_DESC			  ; // 3.3.8   / 17 | DIT Structure Rule Description |
+lDAPSyntaxDescription		: LS_DESC			  ; // 3.3.18  / 54 | LDAP Syntax Description 	     |
+matchingRuleDescription		: MR_DESC			  ; // 3.3.19  / 15 | Matching Rule Description      |
+matchingRuleUseDescription	: MRU_DESC			  ; // 3.3.20  / 31 | Matching Rule Use Description  |
+nameFormDescription		: NF_DESC			  ; // 3.3.22  / 35 | Name Form Description 	     |
 jPEG				: JFIF				  ; // 3.3.17  / 28 | JPEG			     |
 numericString			: NUM_STRING | INTEGER		  ; // 3.3.23  / 36 | Numeric String 		     |
 deliveryMethod			: DELIVERY_METHOD		  ; // 3.3.5   / 14 | Delivery Method 		     |
@@ -72,6 +72,14 @@ DISTINGUISHED_NAME		: RDN (',' RDN)* 				;
 NOPTUID				: DISTINGUISHED_NAME ('#' BIT_STRING)?		;
 DELIVERY_METHOD			: DELPDM ( ' '* '$' ' '* DELPDM )*		;
 SUBSTRING_ASSERTION		: SUBSTR_ASSN+					;
+LS_DESC				: LSD						;
+MR_DESC				: MRD						;
+DCR_DESC			: DCRD						;
+DSR_DESC			: DSRD						;
+NF_DESC				: NFD						;
+MRU_DESC			: MRUD						;
+AT_DESC				: ATD						;
+OC_DESC				: OCD						;
 OBJECT_IDENTIFIER		: NUMERICOID
 				| DESCR						;
 NUMERIC_OID			: NUMERICOID					;
@@ -104,6 +112,110 @@ fragment U_ALPHA		: [A-Z][A-Z]					;
 fragment NUMERICOID		: ('0'|'1'|'2') ( '.' UINT )+			;
 fragment RDN			: ATV ('+' ATV)*				;
 fragment ATV			: (NUMERICOID|DESCR) '=' RDN_ATTR_VAL		;
+fragment QDSTR			: '\'' ( '\u005c' '\u005c'
+                                       | '\u005c' '\u0027'
+                                       | ( ( '\u0000' .. '\u0026' )
+                                         | ( '\u0028' .. '\u005b' )
+                                         | ( '\u005d' .. '\u007f' )
+                                         |    UTFMB
+                                         )
+				       )+ '\''
+				;
+fragment QDESCRS		: '\'' DESCR '\''
+                                | '(' (' '* '\'' DESCR '\'' )+ ' '* ')'
+				;
+fragment QDSTRS			: QDSTR
+				| '(' ' '* QDSTR ( ' '+ QDSTR )* ' '* ')'
+				;
+fragment QRIDS			: UINT
+				| '(' ' '* UINT ( ' '+ UINT )* ' '* ')'
+				;
+fragment OIDS                   : ( '(' ' '* OIDLIST ' '* ')' )					;
+fragment OIDLIST		: (NUMERICOID|DESCR) ( ' '* '$' ' '* (NUMERICOID|DESCR) )*	;
+fragment OCD			: '(' ' '* NUMERICOID
+                                        ( ' '+ 'NAME' ' '+ QDESCRS )?
+                                        ( ' '+ 'DESC' ' '+ QDSTR )?
+                                        ( ' '+ 'OBSOLETE' )?
+					( ' '+ 'SUP'  ' '+ ((NUMERICOID|DESCR)|OIDS) )?
+					( ' '+ ('STRUCTURAL'|'AUXILIARY'|'ABSTRACT') )?
+					( ' '+ 'MUST' ' '+ ((NUMERICOID|DESCR)|OIDS) )?
+					( ' '+ 'MAY'  ' '+ ((NUMERICOID|DESCR)|OIDS) )?
+                                        ( ' '+ 'X-' ( [a-zA-Z]+ | '-' | '_' )+ ' '+ QDSTRS )*
+                                        ' '* ')'
+				;
+fragment MRD                    : '(' ' '* NUMERICOID
+                                        ( ' '+ 'NAME'   ' '+ QDESCRS )?
+                                        ( ' '+ 'DESC'   ' '+ QDSTR )?
+                                        ( ' '+ 'OBSOLETE' )?
+					  ' '+ 'SYNTAX' ' '+ NUMERICOID
+                                        ( ' '+ 'X-' ( [a-zA-Z]+ | '-' | '_' )+ ' '+ QDSTRS )*
+                                          ' '* ')'
+                                ;
+fragment MRUD                   : '(' ' '* NUMERICOID
+                                        ( ' '+ 'NAME'    ' '+ QDESCRS )?
+                                        ( ' '+ 'DESC'    ' '+ QDSTR )?
+                                        ( ' '+ 'OBSOLETE' )?
+                                          ' '+ 'APPLIES' ' '+ ((NUMERICOID|DESCR)|OIDS)
+                                        ( ' '+ 'X-' ( [a-zA-Z]+ | '-' | '_' )+ ' '+ QDSTRS )*
+                                          ' '* ')'
+                                ;
+fragment LSD                    : '(' ' '* NUMERICOID
+                                        ( ' '+ 'DESC' ' '+ QDSTR )?
+                                        ( ' '+ 'X-' ( [a-zA-Z]+ | '-' | '_' )+ ' '+ QDSTRS )*
+                                          ' '* ')'
+                                ;
+fragment DCRD			: '(' ' '* NUMERICOID
+				        ( ' '+ 'NAME' ' '+ QDESCRS )?
+				        ( ' '+ 'DESC' ' '+ QDSTR )?
+				        ( ' '+ 'OBSOLETE' )?
+				        ( ' '+ 'AUX'  ' '+ ((NUMERICOID|DESCR)|OIDS) )?
+				        ( ' '+ 'MUST' ' '+ ((NUMERICOID|DESCR)|OIDS) )?
+				        ( ' '+ 'MAY'  ' '+ ((NUMERICOID|DESCR)|OIDS) )?
+				        ( ' '+ 'NOT'  ' '+ ((NUMERICOID|DESCR)|OIDS) )?
+                                        ( ' '+ 'X-' ( [a-zA-Z]+ | '-' | '_' )+ ' '+ QDSTRS )*
+                                          ' '* ')'
+				;
+fragment DSRD                   : '(' ' '* UINT
+                                        ( ' '+ 'NAME' ' '+ QDESCRS )?
+                                        ( ' '+ 'DESC' ' '+ QDSTR )?
+                                        ( ' '+ 'OBSOLETE' )?
+				          ' '+ 'FORM' ' '+ (NUMERICOID|DESCR)
+				        ( ' '+ 'SUP'  ' '+  QRIDS )?
+                                        ( ' '+ 'X-' ( [a-zA-Z]+ | '-' | '_' )+ ' '+ QDSTRS )*
+                                          ' '* ')'
+                                ;
+fragment NFD			: '(' ' '* NUMERICOID
+                                        ( ' '+ 'NAME' ' '+ QDESCRS )?
+                                        ( ' '+ 'DESC' ' '+ QDSTR )?
+                                        ( ' '+ 'OBSOLETE' )?
+				          ' '+ 'OC'   ' '+ (NUMERICOID|DESCR)
+				          ' '+ 'MUST' ' '+ ((NUMERICOID|DESCR)|OIDS)
+				        ( ' '+ 'MAY'  ' '+ ((NUMERICOID|DESCR)|OIDS) )?
+                                        ( ' '+ 'X-' ( [a-zA-Z]+ | '-' | '_' )+ ' '+ QDSTRS )*
+                                          ' '* ')'
+				;
+fragment ATD			: '(' ' '* NUMERICOID
+				            ( ' '+ 'NAME' ' '+ QDESCRS )?
+					( ' '+ 'DESC' ' '+ QDSTR )?
+					( ' '+ 'OBSOLETE' )?
+					( ' '+ 'SUP' ' '+ (NUMERICOID|DESCR) )?
+					( ' '+ 'EQUALITY' ' '+ (NUMERICOID|DESCR) )?
+					( ' '+ 'ORDERING' ' '+ (NUMERICOID|DESCR) )?
+					( ' '+ 'SUBSTR' 'ING'? ' '+ (NUMERICOID|DESCR) )?
+					( ' '+ 'SYNTAX' ' '+ NUMERICOID ( '{' UINT '}' )? )?
+				 	( ' '+ 'SINGLE-VALUE' )?
+				 	( ' '+ 'COLLECTIVE' )?
+				 	( ' '+ 'NO-USER-MODIFICATION' )?
+					( ' '+ 'USAGE' ' '+
+						  ( 'userApplication'
+						  | 'directoryOperation'
+						  | 'distributedOperation'
+						  | 'dSAOperation'
+						  )
+					)?
+					( ' '+ 'X-' ( [a-zA-Z]+ | '-' | '_' )+ ' '+ QDSTRS )*
+					' '* ')'
+				;
 fragment GENZTIME		: ('\u0030' .. '\u0039') ('\u0030' .. '\u0039')         // century (00 through 99)
                 		  ('\u0030' .. '\u0039') ('\u0030' .. '\u0039')         // year (00 through 99)
                 		  (
