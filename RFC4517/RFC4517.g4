@@ -24,8 +24,8 @@ jPEG				: JFIF				  ; // 3.3.17  / 28 | JPEG			     |
 numericString			: NUM_STRING | INTEGER		  ; // 3.3.23  / 36 | Numeric String 		     |
 deliveryMethod			: DELIVERY_METHOD		  ; // 3.3.5   / 14 | Delivery Method 		     |
 bitString			: BIT_STRING			  ; // 3.3.2   / 6  | Bit String 		     |
-boolean				: BOOLEAN			  ; // 3.3.3   / 7  | Boolean 			     |
 substringAssertion		: SUBSTRING_ASSERTION		  ; // 3.3.30  / 58 | Substring Assertion 	     |
+bool				: BOOLEAN			  ; // 3.3.3   / 7  | Boolean 			     |
 oID				: OBJECT_IDENTIFIER		  ; // 3.3.26  / 38 | OID 			     |
 otherMailbox			: PADDR_OMBX			  ; // 3.3.27  / 39 | Other Mailbox 		     |
 postalAddress			: PADDR_OMBX			  ; // 3.3.28  / 41 | Postal Address 		     |
@@ -68,7 +68,7 @@ octetString			: ((.)+?)?			  ; // 3.3.25  / 40 | Octet String 		     |
 BOOLEAN				: BOOL						;
 COUNTRY_STRING			: U_ALPHA					;
 BIT_STRING			: '\'' BIN_CHARS* '\'' 'B'			;
-DISTINGUISHED_NAME		: RDN (',' RDN)*				;
+DISTINGUISHED_NAME		: RDN (',' RDN)* 				;
 NOPTUID				: DISTINGUISHED_NAME ('#' BIT_STRING)?		;
 DELIVERY_METHOD			: DELPDM ( ' '* '$' ' '* DELPDM )*		;
 SUBSTRING_ASSERTION		: SUBSTR_ASSN+					;
@@ -235,9 +235,9 @@ fragment DESCR			: [a-zA-Z] (
                 	        )*
 				;
 fragment RDN_ATTR_VAL:  	(
-					((TLUTF1|UTFMB) | '\\' ( '\\' | SPECIAL | [a-fA-F0-9][a-fA-F0-9] ) )
-					(((SUTF1|UTFMB) | '\\' ( '\\' | SPECIAL | [a-fA-F0-9][a-fA-F0-9] ) )*
-					((TLUTF1|UTFMB) | '\\' ( '\\' | SPECIAL | [a-fA-F0-9][a-fA-F0-9] ) ))
+					((TLUTF1|UTFMB) | '\\' ( '\\' | SPECIAL | [a-fA-F0-9][a-fA-F0-9]))
+					(((SUTF1|UTFMB) | '\\' ( '\\' | SPECIAL | [a-fA-F0-9][a-fA-F0-9]))*
+					((TLUTF1|UTFMB) | '\\' ( '\\' | SPECIAL | [a-fA-F0-9][a-fA-F0-9])))
 					| '#' ([a-fA-F0-9][a-fA-F0-9])+
 					| [0-9]+
 				)
